@@ -6,7 +6,7 @@ package cpuboard
 type Sword int8
 type Uword uint8
 type Addr uint16
-type Bit bool
+type Bit uint8
 
 /* ==============================================================================
  *    CPU Board Resources

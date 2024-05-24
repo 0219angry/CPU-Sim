@@ -25,23 +25,6 @@ func initCpub() int {
 }
 
 /* ==============================================================================
- *    Command: Display a Help Menu
- * ============================================================================*/
-func help() {
-	fmt.Fprint(os.Stderr, "   i\t\t--- execute an instruction (one step execution)\n")
-	fmt.Fprint(os.Stderr, "   c [addr]\t--- continue(start) execution [to address(hex)]\n")
-	fmt.Fprint(os.Stderr, "   d\t\t--- display the contents of registers\n")
-	fmt.Fprint(os.Stderr, "   s reg data\t--- set data(hex) to the register\n\t\t\treg: pc,acc,ix,cf,vf,nf,zf,ibuf,if,obuf,of\n")
-	fmt.Fprint(os.Stderr, "   m [addr]\t--- dump memory or display data at memory address(hex)\n")
-	fmt.Fprint(os.Stderr, "   w addr data\t--- write data(hex) at memory address(hex)\n")
-	fmt.Fprint(os.Stderr, "   r file\t--- load a program into the main memory from the file\n")
-	fmt.Fprint(os.Stderr, "   t\t\t--- toggle current computer(context)\n")
-	fmt.Fprint(os.Stderr, "   h\t\t--- help (this menu)\n")
-	fmt.Fprint(os.Stderr, "   ?\t\t--- help (this menu)\n")
-	fmt.Fprint(os.Stderr, "   q\t\t--- quit\n")
-}
-
-/* ==============================================================================
  *    Main Routine
  * ============================================================================*/
 func main() {
@@ -88,6 +71,32 @@ func main() {
 		 */
 		if len(input[0]) != 1 {
 			command.UnknownCommand()
+			continue
+		}
+
+		switch input[0] {
+		case "i":
+			cpuboard.Step(cpub)
+		case "c":
+			if len(input) == 1 {
+				command.Continue(cpub, "")
+			} else {
+				command.Continue(cpub, input[1])
+			}
+
+		case "d":
+			command.DisplayRegs(cpub)
+		case "m":
+
+		case "w":
+
+		case "t":
+
+		case "h", "?":
+			command.Help()
+
+		case "q":
+
 		}
 
 	}
