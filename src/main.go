@@ -86,6 +86,13 @@ func main() {
 
 		case "d":
 			command.DisplayRegs(cpub)
+
+		case "s":
+			if len(input) == 3 {
+				command.SetReg(cpub, input[1], input[2])
+			} else {
+				command.InvalidInputCount(input[0], len(input)-1)
+			}
 		case "m":
 
 		case "w":

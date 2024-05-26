@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/0219angry/CPU-Sim/cpuboard"
 )
@@ -71,8 +72,48 @@ func formatRegVal(value cpuboard.Uword) string {
 }
 
 /* ==============================================================================
+ *    Command: Set CPU Board Register
+ * ============================================================================*/
+func SetReg(cpub *cpuboard.Cpub, target string, value string) {
+	switch target {
+	case "acc", "Acc", "ACC":
+		p, e := strconv.ParseUint(value, 16, 8)
+		if e != nil {
+
+		}
+	case "ix", "Ix", "IX":
+
+	default:
+		invalidTargetRegName()
+	}
+}
+
+func invalidTargetRegName() {
+
+}
+
+/* ==============================================================================
  *    Error: Input unknown command message
  * ============================================================================*/
 func UnknownCommand() {
 	fmt.Fprintf(os.Stderr, "Unknown command. Type 'h' for help.\n")
+}
+
+/* ==============================================================================
+ *    Error: Invalid number of arguments message
+ * ============================================================================*/
+func InvalidInputCount(command string, actual int) {
+	var expect string /* Expected Number of Arguments */
+	switch command {
+	case "i", "h", "q", "t", "d", "?":
+		expect = "0"
+	case "r":
+		expect = "1"
+	case "c", "m":
+		expect = "0 or 1"
+	case "s", "w":
+		expect = "2"
+	}
+	fmt.Fprintf(os.Stderr, "Invalid number of arguments. ")
+	fmt.Fprintf(os.Stderr, "Expected %s, but actual %d. Type 'h' for help.\n", expect, actual)
 }
