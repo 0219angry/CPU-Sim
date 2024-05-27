@@ -74,39 +74,93 @@ func formatRegVal(value cpuboard.Uword) string {
 /* ==============================================================================
  *    Command: Set CPU Board Register
  * ============================================================================*/
-func SetReg(cpub *cpuboard.Cpub, target string, value string) {
-	p, e := strconv.ParseUint(value, 16, 8)
-	if enum, ok := e.(*strconv.NumError); ok {
-		switch enum.Err {
-		case strconv.ErrRange:
-		case strconv.ErrSyntax:
-		}
+func SetReg(cpub *cpuboard.Cpub, target string, strv string) error {
+	uiv, e := parseUword(strv)
+	if e != nil {
+		return e
 	}
-
 	switch target {
 	case "pc", "Pc", "PC":
-		cpub.Pc = cpuboard.Uword(p)
+		cpub.Pc = uiv
 	case "acc", "Acc", "ACC":
-		cpub.Acc = cpuboard.Uword(p)
+		cpub.Acc = uiv
 	case "ix", "Ix", "IX":
-		cpub.Ix = cpuboard.Uword(p)
+		cpub.Ix = uiv
 	case "IBUF", "Ibuf", "ibuf":
-		cpub.Ibuf.Buf = cpuboard.Uword(p)
+		cpub.Ibuf.Buf = uiv
 		cpub.Ibuf.Flag = 1
 	case "OBUF", "Obuf", "obuf":
-		cpub.Obuf.Buf = cpuboard.Uword(p)
+		cpub.Obuf.Buf = uiv
 		cpub.Obuf.Flag = 1
 	case "if":
-		cpub.Ibuf.Buf = cpuboard.Uword(p)
+		cpub.Ibuf.Buf = uiv
 	case "of":
-		cpub.Obuf.Buf = cpuboard.Uword(p)
+		cpub.Obuf.Buf = uiv
 	default:
 		invalidTargetRegName()
 	}
+	return e
 }
 
 func invalidTargetRegName() {
 	fmt.Fprintf(os.Stderr, "Unknown register name.d\n")
+}
+
+/* ==============================================================================
+ *    Command: Display CPU Board Memory
+ * ============================================================================*/
+func DisplayMem(cpub *cpuboard.Cpub, straddr string) error {
+	if straddr == "" {
+		displayMemAll(cpub)
+	} else {
+		uiaddr, e := parseAddr(straddr)
+		if e != nil {
+			return e
+		}
+		displayMemParts(cpub, int(uiaddr)/16)
+	}
+	return nil
+}
+
+/* ==============================================================================
+ *    Command: Display CPU Board Memory (32bytes)
+ * ============================================================================*/
+func displayMemParts(cpub *cpuboard.Cpub, line int) {
+	var area string
+	if line < 16 {
+		area = "TEXT"
+	} else {
+		area = "DATA"
+	}
+	displayColumnName(area)
+	for i := 0; i < 2; i++ {
+		displayMemLine(cpub, line+i)
+	}
+}
+
+/* ==============================================================================
+ *    Command: Display CPU Board Memory (ALL)
+ * ============================================================================*/
+func displayMemAll(cpub *cpuboard.Cpub) {
+	displayColumnName("TEXT")
+	for i := 0; i < 32; i++ {
+		if i == 16 {
+			displayColumnName("DATA")
+		}
+		displayMemLine(cpub, i)
+	}
+}
+
+func displayMemLine(cpub *cpuboard.Cpub, line int) {
+	fmt.Fprintf(os.Stderr, "%03X |  ", line*16)
+	for i := 0; i < 16; i++ {
+		fmt.Fprintf(os.Stderr, "%02X ", cpub.Mem[line*16+i])
+	}
+	fmt.Fprintf(os.Stderr, "\n")
+}
+
+func displayColumnName(area string) {
+	fmt.Fprintf(os.Stderr, "%s    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n", area)
 }
 
 /* ==============================================================================
@@ -133,4 +187,33 @@ func InvalidInputCount(command string, actual int) {
 	}
 	fmt.Fprintf(os.Stderr, "Invalid number of arguments. ")
 	fmt.Fprintf(os.Stderr, "Expected %s, but actual %d. Type 'h' for help.\n", expect, actual)
+}
+
+/* ==============================================================================
+ *    Support Function: String Addr to Unsigned Int (For 9 bits value)
+ * ============================================================================*/
+func parseAddr(str string) (cpuboard.Addr, error) {
+	p, e := strconv.ParseUint(str, 16, 9)
+	if enum, ok := e.(*strconv.NumError); ok {
+		switch enum.Err {
+		case strconv.ErrRange:
+			fmt.Fprintf(os.Stderr, "Input address is out of range.")
+		case strconv.ErrSyntax:
+		}
+	}
+	return cpuboard.Addr(p), e
+}
+
+/* ==============================================================================
+ *    Support Function: String Uword to Unsigned Int (For 8 bits value)
+ * ============================================================================*/
+func parseUword(str string) (cpuboard.Uword, error) {
+	p, e := strconv.ParseUint(str, 16, 8)
+	if enum, ok := e.(*strconv.NumError); ok {
+		switch enum.Err {
+		case strconv.ErrRange:
+		case strconv.ErrSyntax:
+		}
+	}
+	return cpuboard.Uword(p), e
 }

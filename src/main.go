@@ -94,7 +94,14 @@ func main() {
 				command.InvalidInputCount(input[0], len(input)-1)
 			}
 		case "m":
-
+			switch len(input) {
+			case 1:
+				command.DisplayMem(cpub, "")
+			case 2:
+				command.DisplayMem(cpub, input[1])
+			default:
+				command.InvalidInputCount(input[0], len(input)-1)
+			}
 		case "w":
 
 		case "t":
