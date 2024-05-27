@@ -75,21 +75,38 @@ func formatRegVal(value cpuboard.Uword) string {
  *    Command: Set CPU Board Register
  * ============================================================================*/
 func SetReg(cpub *cpuboard.Cpub, target string, value string) {
-	switch target {
-	case "acc", "Acc", "ACC":
-		p, e := strconv.ParseUint(value, 16, 8)
-		if e != nil {
-
+	p, e := strconv.ParseUint(value, 16, 8)
+	if enum, ok := e.(*strconv.NumError); ok {
+		switch enum.Err {
+		case strconv.ErrRange:
+		case strconv.ErrSyntax:
 		}
-	case "ix", "Ix", "IX":
+	}
 
+	switch target {
+	case "pc", "Pc", "PC":
+		cpub.Pc = cpuboard.Uword(p)
+	case "acc", "Acc", "ACC":
+		cpub.Acc = cpuboard.Uword(p)
+	case "ix", "Ix", "IX":
+		cpub.Ix = cpuboard.Uword(p)
+	case "IBUF", "Ibuf", "ibuf":
+		cpub.Ibuf.Buf = cpuboard.Uword(p)
+		cpub.Ibuf.Flag = 1
+	case "OBUF", "Obuf", "obuf":
+		cpub.Obuf.Buf = cpuboard.Uword(p)
+		cpub.Obuf.Flag = 1
+	case "if":
+		cpub.Ibuf.Buf = cpuboard.Uword(p)
+	case "of":
+		cpub.Obuf.Buf = cpuboard.Uword(p)
 	default:
 		invalidTargetRegName()
 	}
 }
 
 func invalidTargetRegName() {
-
+	fmt.Fprintf(os.Stderr, "Unknown register name.d\n")
 }
 
 /* ==============================================================================
