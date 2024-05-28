@@ -68,7 +68,7 @@ func formatRegVal(value cpuboard.Uword) string {
 	/*
 	 *	return string : "Hex value(signed value, unsigned value)"
 	 */
-	return fmt.Sprintf("0x%02d (%3d, %3d)", value, int8(value), value)
+	return fmt.Sprintf("0x%02X (%3d, %3d)", value, int8(value), value)
 }
 
 /* ==============================================================================
@@ -103,7 +103,7 @@ func SetReg(cpub *cpuboard.Cpub, target string, strv string) error {
 }
 
 func invalidTargetRegName() {
-	fmt.Fprintf(os.Stderr, "Unknown register name.d\n")
+	fmt.Fprintf(os.Stderr, "Unknown register name.\n")
 }
 
 /* ==============================================================================
@@ -161,6 +161,15 @@ func displayMemLine(cpub *cpuboard.Cpub, line int) {
 
 func displayColumnName(area string) {
 	fmt.Fprintf(os.Stderr, "%s    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n", area)
+}
+
+/* ==============================================================================
+ *    Command: Switch Current CPU Board
+ * ============================================================================*/
+func SwitchCPU(cpuboards *[2]cpuboard.Cpub, cpubid int) (*cpuboard.Cpub, int) {
+	fmt.Fprintf(os.Stderr, "\x1b[31m[DEBUG]\x1b[39m cpu%d acc = %02X\n", cpubid, cpuboards[cpubid].Acc)
+	cpubid ^= 1
+	return &(cpuboards[cpubid]), cpubid
 }
 
 /* ==============================================================================

@@ -29,8 +29,8 @@ func initCpub() int {
  * ============================================================================*/
 func main() {
 	var (
-		cpub_id int
-		cpub    *cpuboard.Cpub
+		cpubid int
+		cpub   *cpuboard.Cpub
 	)
 	/*
 	 *	Create newscanner
@@ -40,8 +40,8 @@ func main() {
 	/*
 	 *	Initalize the CPU board state
 	 */
-	cpub_id = initCpub()
-	cpub = &(cpuboards[cpub_id])
+	cpubid = initCpub()
+	cpub = &(cpuboards[cpubid])
 
 	/*
 	 *	Interpret commands
@@ -51,7 +51,7 @@ func main() {
 		/*
 		 *	Prompt
 		 */
-		fmt.Fprintf(os.Stderr, "CPU%d,PC=0x%02x> ", cpub_id, cpub.Pc)
+		fmt.Fprintf(os.Stderr, "CPU%d,PC=0x%02x> ", cpubid, cpub.Pc)
 
 		/*
 		 *	Read a command line input
@@ -108,7 +108,11 @@ func main() {
 		case "w":
 
 		case "t":
-
+			if len(input) == 1 {
+				cpub, cpubid = command.SwitchCPU(&cpuboards, cpubid)
+			} else {
+				command.InvalidInputCount(input[0], len(input)-1)
+			}
 		case "h", "?":
 			command.Help()
 
