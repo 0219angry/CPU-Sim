@@ -8,26 +8,37 @@ import (
 	"github.com/0219angry/CPU-Sim/cpuboard"
 )
 
-func Continue(cpub *cpuboard.Cpub, straddr string) {
-	// MAX_EXEC_COUNT := 500
-	// var (
-	// 	addr   int
-	// 	breakp cpuboard.Addr
-	// 	count  int
-	// 	temp   int
-	// )
+func Continue(cpub *cpuboard.Cpub, straddr string) error {
+	MAX_EXEC_COUNT := 500
+	var (
+		count  int
+		breakp cpuboard.Addr
+		e      error
+	)
 
-	// /*
-	//  *	Check and set a break-point address
-	//  */
+	/*
+	 *	Check and set a break-point address
+	 */
 
-	// if straddr == "" {
-	// 	breakp = 0xffff
-	// } else {
-	// 	p, _ := strconv.ParseUint(straddr, 16, 16)
-	// 	breakp = cpuboard.Addr(p)
+	if straddr == "" {
+		breakp = 0xffff
+	} else {
+		breakp, e = parseAddr(straddr)
+		if e != nil {
+			return e
+		}
+	}
 
-	// }
+	/*
+	 *	Continue calling Step() function until reach breakp or MAX_EXEC_COUNT
+	 */
+
+	for {
+		count++
+		if cpub.Pc >= cpuboard.Uword(breakp) || count > MAX_EXEC_COUNT {
+			cpuboard.Step(cpub)
+		}
+	}
 }
 
 /* ==============================================================================
