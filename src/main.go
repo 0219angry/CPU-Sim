@@ -110,7 +110,7 @@ func main() {
 			command.Help()
 
 		case "q":
-
+			command.Quit()
 		}
 
 	}
