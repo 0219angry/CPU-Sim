@@ -76,7 +76,10 @@ func main() {
 
 		switch input[0] {
 		case "i":
-			cpuboard.Step(cpub)
+			if cpuboard.Step(cpub) == cpuboard.RUN_HALT {
+				fmt.Fprintf(os.Stderr, "Program halted.")
+			}
+
 		case "c":
 			if len(input) == 1 {
 				command.Continue(cpub, "")
