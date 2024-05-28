@@ -106,7 +106,11 @@ func main() {
 				command.InvalidInputCount(input[0], len(input)-1)
 			}
 		case "w":
-
+			if len(input) == 3 {
+				command.SetMem(cpub, input[1], input[2])
+			} else {
+				command.InvalidInputCount(input[0], len(input)-1)
+			}
 		case "t":
 			if len(input) == 1 {
 				cpub, cpubid = command.SwitchCPU(&cpuboards, cpubid)

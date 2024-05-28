@@ -107,6 +107,23 @@ func invalidTargetRegName() {
 }
 
 /* ==============================================================================
+ *    Command: Set CPU Board Memory
+ * ============================================================================*/
+func SetMem(cpub *cpuboard.Cpub, strtg string, strv string) error {
+	uitg, e1 := parseAddr(strtg)
+	if e1 != nil {
+		return e1
+	}
+	uiv, e2 := parseUword(strv)
+	if e2 != nil {
+		return e2
+	}
+
+	cpub.Mem[uitg] = uiv
+	return nil
+}
+
+/* ==============================================================================
  *    Command: Display CPU Board Memory
  * ============================================================================*/
 func DisplayMem(cpub *cpuboard.Cpub, straddr string) error {
@@ -167,7 +184,6 @@ func displayColumnName(area string) {
  *    Command: Switch Current CPU Board
  * ============================================================================*/
 func SwitchCPU(cpuboards *[2]cpuboard.Cpub, cpubid int) (*cpuboard.Cpub, int) {
-	fmt.Fprintf(os.Stderr, "\x1b[31m[DEBUG]\x1b[39m cpu%d acc = %02X\n", cpubid, cpuboards[cpubid].Acc)
 	cpubid ^= 1
 	return &(cpuboards[cpubid]), cpubid
 }
