@@ -76,15 +76,22 @@ func main() {
 
 		switch input[0] {
 		case "i":
-			if cpuboard.Step(cpub) == cpuboard.RUN_HALT {
-				fmt.Fprintf(os.Stderr, "Program halted.")
+			if len(input) == 1 {
+				if cpuboard.Step(cpub) == cpuboard.RUN_HALT {
+					fmt.Fprintf(os.Stderr, "Program halted.")
+				}
+			} else {
+				command.InvalidInputCount(input[0], len(input)-1)
 			}
 
 		case "c":
-			if len(input) == 1 {
+			switch len(input) {
+			case 1:
 				command.Continue(cpub, "")
-			} else {
+			case 2:
 				command.Continue(cpub, input[1])
+			default:
+				command.InvalidInputCount(input[0], len(input)-1)
 			}
 
 		case "d":
