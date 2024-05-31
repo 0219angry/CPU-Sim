@@ -182,7 +182,12 @@ func displayMemAll(cpub *cpuboard.Cpub) {
 func displayMemLine(cpub *cpuboard.Cpub, line int) {
 	fmt.Fprintf(os.Stderr, "%03X |  ", line*16)
 	for i := 0; i < 16; i++ {
-		fmt.Fprintf(os.Stderr, "%02X ", cpub.Mem[line*16+i])
+		if line*16+i == int(cpub.Pc) {
+			fmt.Fprintf(os.Stderr, "\x1b[7m%02X\x1b[0m ", cpub.Mem[line*16+i])
+		} else {
+			fmt.Fprintf(os.Stderr, "%02X ", cpub.Mem[line*16+i])
+		}
+
 	}
 	fmt.Fprintf(os.Stderr, "\n")
 }
