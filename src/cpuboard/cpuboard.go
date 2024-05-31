@@ -39,7 +39,7 @@ const RUN_STEP = 1
 /* ==============================================================================
  *    Simulation of Single Instruction
  * ============================================================================*/
-func Step(*Cpub) int {
+func Step(cpub *Cpub) int {
 	/* Add any code for simulation of single instruction */
 
 	return RUN_HALT
